@@ -1,5 +1,7 @@
 # Electricity Demand Forecasting — Sequence Modeling Benchmark
 
+[![CI](https://github.com/ArsenNanyan/electricity-demand-forecasting/actions/workflows/ci.yml/badge.svg)](https://github.com/ArsenNanyan/electricity-demand-forecasting/actions/workflows/ci.yml)
+
 Predict the **next 24 hourly electricity-demand values** for one customer from historical
 consumption, and compare forecasting methods *fairly* on identical data and forecast origins:
 
@@ -8,6 +10,43 @@ consumption, and compare forecasting methods *fairly* on identical data and fore
 - **RNN / LSTM / GRU** — recurrent neural nets (PyTorch)
 - **PatchTST** — a time-series transformer *(optional stretch)*
 - **Chronos-2 / TimesFM** — pretrained zero-shot foundation models *(optional stretch)*
+
+## Demo
+
+24-hour forecast rolling across consecutive backtest days (history, actual, and three models):
+
+![Forecast demo](artifacts/reports/demo.gif)
+
+## Dashboard
+
+Interactive Streamlit app: pick models, slide through backtest origins, and compare the
+24-hour forecast against actuals with metrics, horizon-error and latency panels.
+
+![Dashboard — forecast view](artifacts/reports/dashboard_forecast.png)
+![Dashboard — metrics table](artifacts/reports/dashboard_metrics.png)
+
+```bash
+streamlit run app/streamlit_app.py   # http://localhost:8501
+```
+
+## Prediction API (FastAPI)
+
+A single consistent endpoint for serving forecasts. Train artifacts once, then run:
+
+```bash
+python -m src.train                           # saves models to artifacts/models/
+uvicorn src.api.main:app --reload             # http://localhost:8000/docs
+```
+
+`POST /forecast` takes a validated 168-hour history and an origin timestamp, and returns
+24 hourly predictions with units and model name. Invalid history length or non-finite
+values are rejected with HTTP 422.
+
+```jsonc
+// POST /forecast
+{ "history": [/* exactly 168 kW values */], "origin": "2014-06-02T09:00:00",
+  "model": "LightGBM" }
+```
 
 ## Dataset
 
@@ -68,8 +107,10 @@ identical test origins; none are invented.
 | LightGBM | 2.010 | 3.272 | 51.7 | 24.7 |
 | Seasonal naïve (168h) | 2.261 | 4.900 | 45.0 | ~0 |
 
-`±` is the standard deviation of MAE across 3 training seeds. See
-`artifacts/reports/compare_bars.png` and `compare_horizon.png`.
+`±` is the standard deviation of MAE across 3 training seeds.
+
+![Model comparison — MAE & RMSE](artifacts/reports/compare_bars.png)
+![Error by horizon step](artifacts/reports/compare_horizon.png)
 
 ### When complex models beat (and fail to beat) the baseline
 
@@ -92,6 +133,15 @@ identical test origins; none are invented.
 - **Error vs horizon** (`compare_horizon.png`) is not monotonic — it peaks in the evening
   hours (~h17, h19), reflecting this client's daily demand shape rather than pure drift.
 
+### Failure analysis (where forecasts break down)
+
+Every model forecasts **weekends much better than weekdays** — weekend demand is lower and
+more regular, while weekday mornings carry the sharp ~9am peak that is hardest to hit.
+Chronos leads in both segments. Full segment table and the worst forecast days are in
+`results/failure_analysis.csv`.
+
+![Weekday vs weekend error](artifacts/reports/failure_weekend.png)
+
 ### Reproduce the results
 
 ```bash
@@ -101,8 +151,11 @@ python -m src.models.gbm            # LightGBM
 python -m src.models.rnn            # RNN / LSTM / GRU (3 seeds)
 python -m src.backtest              # precompute dashboard forecasts
 python -m src.plots                 # comparison charts
+python -m src.analysis              # weekday/weekend + worst-day failure analysis
+python -m src.train                 # save model artifacts (+ MLflow run)
 streamlit run app/streamlit_app.py  # interactive demo at http://localhost:8501
-pytest                              # leakage + shape safety tests
+uvicorn src.api.main:app --reload   # prediction API at http://localhost:8000/docs
+pytest                              # leakage + shape + API safety tests
 ```
 
 ### Limitations

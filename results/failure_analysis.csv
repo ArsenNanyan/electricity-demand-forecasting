@@ -1,0 +1,17 @@
+# Segment MAE by model
+model,MAE_weekday,MAE_weekend,MAE_overall
+Chronos-Bolt small,1.368,0.843,1.218
+PatchTST,1.472,0.893,1.306
+Seasonal naive 24h,1.662,0.909,1.447
+GRU,1.715,1.083,1.534
+LSTM,1.724,1.09,1.543
+LightGBM,2.12,1.738,2.01
+RNN,2.428,2.135,2.344
+
+# Worst 5 forecast origins for best model (Chronos-Bolt small)
+origin,weekend,Chronos-Bolt small_MAE_kw
+2014-09-15 15:00:00,False,12.995
+2014-08-06 15:00:00,False,8.94
+2014-09-16 15:00:00,False,8.711
+2014-07-31 15:00:00,False,8.647
+2014-08-01 15:00:00,False,8.177
