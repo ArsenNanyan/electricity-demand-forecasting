@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Data (large / regenerable) — keep the folders via .gitkeep, ignore contents
+data/raw/*
+data/processed/*
+data/splits/*
+!data/**/.gitkeep
+
+# Model artifacts and results (regenerable)
+artifacts/models/*
+!artifacts/models/.gitkeep
+
+# Experiment tracking / training logs
+mlruns/
+wandb/
+lightning_logs/
+
+# Scratch prediction files (merged into results/backtest.npz)
+results/pred_*.npz
+
+# OS
+.DS_Store
+Thumbs.db

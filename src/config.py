@@ -1,0 +1,13 @@
+"""Load the experiment protocol from configs/default.yaml."""
+from pathlib import Path
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_config(path: str | Path = ROOT / "configs" / "default.yaml") -> dict:
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+CFG = load_config()

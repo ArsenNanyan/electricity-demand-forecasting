@@ -1,0 +1,31 @@
+# Core runtime — pinned for reproducibility (see README).
+# Versions reflect the environment this project was built and tested in.
+numpy==2.2.6
+pandas==2.3.3
+pyarrow==23.0.0
+scikit-learn==1.7.1
+torch==2.10.0
+
+# Plotting / EDA
+matplotlib>=3.8
+seaborn>=0.13
+plotly>=5.20
+
+# Tree baselines
+lightgbm>=4.3
+xgboost>=2.0
+
+# App / API layer
+streamlit==1.37.1
+fastapi==0.128.0
+uvicorn==0.40.0
+pydantic==2.12.5
+
+# Experiment tracking + testing
+mlflow>=2.12
+pytest==8.4.1
+
+# Optional heavyweight models — install only at their stage (Steps 7-8):
+#   pip install neuralforecast        # PatchTST
+#   pip install "autogluon.timeseries" # Chronos-2 (zero-shot foundation model)
+#   pip install timesfm               # see official repo; non-commercial weights

@@ -1,0 +1,26 @@
+# Single source of truth for the experimental protocol.
+# Every model reads these so comparisons stay fair (same client, same origins, same split).
+
+data:
+  raw_file: data/raw/LD2011_2014.txt
+  processed_file: data/processed/client_hourly.parquet
+  sep: ";"
+  decimal: ","
+  client: MT_001            # chosen customer; verify active period before trusting
+  resample: "1h"            # aggregate 4 x 15-min readings -> hourly MEAN kW (not sum!)
+
+protocol:
+  context: 168              # input history in hours (1 week); ablations: 336, 672
+  horizon: 24               # forecast the next 24 hourly values
+  origin_step: 24           # rolling forecast origins spaced one day apart
+  train_frac: 0.70          # first 70% of timeline -> train
+  val_frac: 0.15            # next 15% -> validation (train_end..val_end)
+  # remaining 15% -> test (held out until final evaluation)
+
+seed: 42                    # fixed for reproducibility / seed-variance reporting
+
+paths:
+  splits_dir: data/splits
+  models_dir: artifacts/models
+  reports_dir: artifacts/reports
+  results_dir: results

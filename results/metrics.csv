@@ -1,0 +1,9 @@
+model,split,MAE_kw,RMSE_kw,sMAPE_pct,p50_latency_ms,notes
+Seasonal naive (24h),test,1.4465263925371616,3.456819462262355,34.67546624130097,,chosen
+Seasonal naive (168h),test,2.2611143521328523,4.900389486450605,45.00071731495364,,
+LightGBM,test,2.0104271835072365,3.2715128676749043,51.74488933968867,24.71,24 direct regressors; lags+rolling+calendar
+RNN,test,2.0031,3.3757,51.4968,0.04,3 seeds; MAE std=0.345
+LSTM,test,1.5369,3.012,41.5437,0.037,3 seeds; MAE std=0.004
+GRU,test,1.5434,2.982,42.8734,0.14,3 seeds; MAE std=0.014
+Chronos-Bolt (small),test,1.2176491332399408,2.770712632473202,31.440002732822077,33.15,zero-shot; amazon/chronos-bolt-small
+PatchTST,test,1.3062755957821277,2.68153589596275,34.980228273078374,31.22,NeuralForecast; context=168
